@@ -21,15 +21,31 @@ define openvpn::server (
 	$easy_rsa = $::openvpn::params::easy_rsa
 	$vpn_dir = "/etc/openvpn/${name}"
 	$ssl_dir = "${vpn_dir}/ssl"
+	$ccd_dir = "${vpn_dir}/clients"
 	$vars = "${vpn_dir}/easy-rsa.vars"
 	$opensslcnf = "${vpn_dir}/openssl.cnf"
 	
 	file {
-		[ $vpn_dir, $ssl_dir ]:
+		$vpn_dir:
+			ensure => directory,
+			owner  => 'root',
+			group  => 'root',
+			mode   => 0755,
+			notify => Service['openvpn'];
+
+		$ssl_dir:
 			ensure => directory,
 			owner  => 'root',
 			group  => 'root',
 			mode   => 0755;
+
+		$ccd_dir:
+			ensure  => directory,
+			owner   => 'root',
+			group   => 'root',
+			mode    => 0755,
+			purge   => true,
+			recurse => true;
 
 		$vars:
 			ensure  => present,
@@ -58,11 +74,13 @@ define openvpn::server (
 			creates => "${ssl_dir}/dh1024.pem",
 			require => [ File[$vars], File[$opensslcnf] ],
 			before  => Exec["openvpn-${name}-init-ca"];
+
 		"openvpn-${name}-init-ca":
 			command => ". ${vars} && pkitool --initca",
 			creates => "${ssl_dir}/ca.key",
 			require => [ File[$vars], File[$opensslcnf] ],
 			before  => Exec["openvpn-${name}-server-cert"];
+
 		"openvpn-${name}-server-cert":
 			command => ". ${vars} && pkitool --server ${server_cn}",
 			creates => "${ssl_dir}/${server_cn}.key",
@@ -73,7 +91,6 @@ define openvpn::server (
 		owner  => 'root',
 		group  => 'root',
 		mode   => 0644,
-		notify => Service['openvpn'],
 	}
 
 	concat::fragment { "openvpn-${name}-preamble":

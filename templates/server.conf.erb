@@ -64,9 +64,13 @@ client-to-client
 # Routes
 <%- routes.each do |route| -%>
 route <%= route['network'] %> <%= route['netmask'] %> <%= route['gateway'] %>
+push route <%= route['network'] %> <%= route['netmask'] %> <%= route['gateway'] %>
 <%- end -%>
 
 <%- end -%>
+# Per-client configuration
+client-config-dir <%= ccd_dir %>
+
 # Connection freq, N connects per S seconds.  Resist denial of service attacks.
 connect-freq 1 1
 
