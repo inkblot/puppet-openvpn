@@ -12,7 +12,7 @@
 # This variable should point to
 # the top level of the easy-rsa
 # tree.
-export EASY_RSA="<%= easy_rsa %>"
+export EASY_RSA="<%= @easy_rsa %>"
 
 #
 # This variable should point to
@@ -26,7 +26,7 @@ export GREP="grep"
 # This variable should point to
 # the openssl.cnf file included
 # with easy-rsa.
-export KEY_CONFIG="<%= opensslcnf %>"
+export KEY_CONFIG="<%= @opensslcnf %>"
 
 # Edit this variable to point to
 # your soon-to-be-created key
@@ -36,7 +36,7 @@ export KEY_CONFIG="<%= opensslcnf %>"
 # a rm -rf on this directory
 # so make sure you define
 # it correctly!
-export KEY_DIR="<%= ssl_dir %>"
+export KEY_DIR="<%= @ssl_dir %>"
 
 # Issue rm -rf warning
 echo NOTE: If you run ./clean-all, I will be doing a rm -rf on $KEY_DIR
@@ -50,19 +50,19 @@ export PKCS11_PIN="dummy"
 # down TLS negotiation performance
 # as well as the one-time DH parms
 # generation process.
-export KEY_SIZE=<%= key_size %>
+export KEY_SIZE=<%= @key_size %>
 
 # In how many days should the root CA key expire?
-export CA_EXPIRE=<%= ca_expiration_days %>
+export CA_EXPIRE=<%= @ca_expiration_days %>
 
 # In how many days should certificates expire?
-export KEY_EXPIRE=<%= key_expiration_days %>
+export KEY_EXPIRE=<%= @key_expiration_days %>
 
 # These are the default values for fields
 # which will be placed in the certificate.
 # Don't leave any of these fields blank.
-export KEY_COUNTRY="<%= country %>"
-export KEY_PROVINCE="<%= province %>"
-export KEY_CITY="<%= city %>"
-export KEY_ORG="<%= org %>"
-export KEY_EMAIL="<%= email %>"
+export KEY_COUNTRY="<%= @country %>"
+export KEY_PROVINCE="<%= @province %>"
+export KEY_CITY="<%= @city %>"
+export KEY_ORG="<%= @org %>"
+export KEY_EMAIL="<%= @email %>"

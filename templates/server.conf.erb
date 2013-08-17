@@ -33,7 +33,7 @@ ping-restart 300
 ping-timer-rem
 
 # Address of the local tap0 interface
-ifconfig <%= local_address %> <%= netmask %>
+ifconfig <%= @local_address %> <%= @netmask %>
 
 # Don't complain about not knowing IP addresses.
 ifconfig-nowarn
@@ -52,7 +52,7 @@ persist-remote-ip
 persist-tun
 
 # Address to bind to
-local <%= bind_address %>
+local <%= @bind_address %>
 
 # Multi-client server
 mode server
@@ -60,16 +60,16 @@ mode server
 # Let them talk to each other
 client-to-client
 
-<%- if not routes.empty? -%>
+<%- if not @routes.empty? -%>
 # Routes
-<%- routes.each do |route| -%>
+<%-   @routes.each do |route| -%>
 route <%= route['network'] %> <%= route['netmask'] %> <%= route['gateway'] %>
 push route <%= route['network'] %> <%= route['netmask'] %> <%= route['gateway'] %>
-<%- end -%>
+<%-   end -%>
 
 <%- end -%>
 # Per-client configuration
-client-config-dir <%= ccd_dir %>
+client-config-dir <%= @ccd_dir %>
 
 # Connection freq, N connects per S seconds.  Resist denial of service attacks.
 connect-freq 1 1
@@ -78,14 +78,14 @@ connect-freq 1 1
 float
 
 # Diffie-Hellman parameters (1024 bits) (only needed on server)
-dh <%= ssl_dir %>/dh1024.pem
+dh <%= @ssl_dir %>/dh1024.pem
 
 # This command allows one user to have more than one connection at a time,
 # e.g. from multiple machines on his home net.  
 duplicate-cn
 
 # Send intranet traffic through the tunnel.
-push route <%= intranet %> <%= intranet_netmask %> <%= intranet_gateway %>
+push route <%= @intranet %> <%= @intranet_netmask %> <%= @intranet_gateway %>
 
 # Crypto Parameters (must match the peer, can't push them)
 
@@ -109,13 +109,13 @@ comp-lzo
 tls-server
 
 # Certificate Authority file (symbolic links to the real locations)
-ca <%= ssl_dir %>/ca.crt
+ca <%= @ssl_dir %>/ca.crt
 
 # Certificate Revocation List
-crl-verify <%= ssl_dir %>/crl.pem
+crl-verify <%= @ssl_dir %>/crl.pem
 
 # Our certificate/public key
-cert <%= ssl_dir %>/<%= server_cn %>.crt
+cert <%= @ssl_dir %>/<%= @server_cn %>.crt
 
 # Our private key
-key <%= ssl_dir %>/<%= server_cn %>.key
+key <%= @ssl_dir %>/<%= @server_cn %>.key
