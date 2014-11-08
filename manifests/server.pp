@@ -18,7 +18,7 @@ define openvpn::server (
 	$intranet_gateway,
 	$routes              = [],
 ) {
-	$easy_rsa = $::openvpn::params::easy_rsa
+	$easy_rsa = $::openvpn::easy_rsa_path
 	$vpn_dir = "/etc/openvpn/${name}"
 	$ssl_dir = "${vpn_dir}/ssl"
 	$ccd_dir = "${vpn_dir}/clients"

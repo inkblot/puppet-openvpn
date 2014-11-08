@@ -1,7 +1,18 @@
-# ex:ts=4 sw=4 tw=72
+# ex:ts=4 sw=4 tw=72 et
 
-class openvpn {
-	include openvpn::params
-	include openvpn::install
-	include openvpn::service
+class openvpn (
+    $openvpn_package,
+    $openvpn_service,
+    $easy_rsa_path,
+) {
+    package { 'openvpn':
+        ensure => present,
+        name   => $openvpn_package,
+	}
+
+    service { 'openvpn':
+        ensure  => running,
+        name    => $openvpn_service,
+        require => Package['openvpn'],
+    }
 }

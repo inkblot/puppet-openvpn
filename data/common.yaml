@@ -1,0 +1,4 @@
+# ex: si ts=2 sw=2 et
+openvpn::openvpn_package: 'openvpn'
+openvpn::openvpn_service: 'openvpn'
+openvpn::easy_rsa_path: '/usr/share/doc/openvpn/examples/easy-rsa/2.0'

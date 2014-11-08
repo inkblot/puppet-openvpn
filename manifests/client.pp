@@ -12,7 +12,7 @@ define openvpn::client (
 	$org                 = "Snake Oil",
 	$email               = "snakeoil@example.com",
 ) {
-	$easy_rsa = $::openvpn::params::easy_rsa
+	$easy_rsa = $::openvpn::easy_rsa_path
 	$vpn_dir = "/etc/openvpn/${name}"
 	$ssl_dir = "${vpn_dir}/ssl"
 	$vars = "${vpn_dir}/easy-rsa.vars"
