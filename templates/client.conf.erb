@@ -1,0 +1,100 @@
+<%-
+require 'ipaddr'
+-%>
+# Originally /usr/share/doc/packages/openvpn/sample-config-files/tls-home.conf
+# Set up for Xena <->Mathnet by jimc on 2004-06-15.  This is openvpn-2.0beta5
+
+# General Parameters
+
+# Verbosity. 0=fatal only, 1=startup + nonfatal errs, 2 = cert + crypto names, 
+# 3=TLS debug stuff, up to 11.
+verb 1
+
+# Don't bind to a local socket pair.  This will cause the IP stack to choose a
+# port randomly
+nobind
+
+# Drop privileges and enter chroot jail (can't, no access to tunnel)
+# user nobody
+# group nobody
+# chroot /etc/openvpn/jail
+
+# Lock key and buffers in memory, keeping them out of the swap file.
+mlock
+
+# Use a dynamic tun device.  (Could also be tap, for ether bridging.)
+dev tap0
+# tun-ipv6 (can't use with mode server on the other end)
+
+# MTU for tunnel (outer) packets.  Over-conservative default 1300, recommended
+# is (link_mtu - 28) deducting the UDP header, i.e. 1472 for a standard link 
+# of MTU = 1500.  The default seems to work OK in v2.0.  
+# link-mtu 1472
+
+# Path MTU discovery, should DF (don't fragment) be set? no, maybe, yes.
+# "maybe" uses per-route heuristics to decide.
+mtu-disc maybe
+
+# Empirically verify the MTU.  Results logged after about 3 minutes.
+# Requires equivalent support on the other end.
+mtu-test
+
+# Send pings to keep conntracks alive and detect a dead peer, only if connected.
+ping 10
+ping-restart 300
+
+# Parameters of Peer
+
+# Our OpenVPN peer 
+remote <%= @server %>
+
+# Protocol (udp, tcp-server, tcp-client).  udp is the default, and usually best.
+proto udp
+<%- if @address
+
+# (Don't) configure local <-> remote IP addresses of tunnel.  Get from server.
+      (ip, prefixlen) = @address.split /\// -%>
+ifconfig <%= "#{ip} #{IPAddr.new('255.255.255.255').mask(prefixlen).to_s}" %>
+<%- else -%>
+
+# Accept configuration overrides from the server.
+pull
+<%- end -%>
+
+# Port (default is 5000)
+port <%= @port %>
+
+# Crypto Parameters (must match the peer, can't push them)
+
+# HMAC algorithm (anti-tampering checksum)
+auth RSA-MD5
+
+# Cryptographic cipher on main data channel
+# cipher AES-128-CBC (too bad, not on Harlech yet)
+cipher CAST5-CBC
+
+# Compress the data.
+comp-lzo
+
+# TLS encryption algo(s), colon separated.  `openvpn --show-tls` for a list. 30
+# ciphers in default list starting with DHE-RSA-AES256-SHA (most preferred)
+# down to EXP-RC4-MD5 (40 bits).  Use default.
+
+# TLS Parameters
+
+# Polarity of this host (tls-client or tls-server)
+tls-client
+
+# Certificate Authority file (symbolic links to the real locations)
+ca <%= @ssl_dir %>/ca.crt
+
+# Our certificate/public key
+cert <%= @ssl_dir %>/client.crt
+
+# Our private key
+key <%= @ssl_dir %>/client.key
+persist-key
+#askpass
+
+# How to validate the server certificate
+verify-x509-name '<%= @server_dn %>'

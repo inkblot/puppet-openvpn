@@ -1,107 +1,96 @@
-# ex:ts=4 sw=4 tw=72
+# ex: syntax=puppet ts=4 sw=4 si et
 
 define openvpn::server (
-	$key_size            = 1024,
-	$ca_expiration_days  = 3650,
-	$key_expiration_days = 3650,
-	$default_md          = 'sha256',
-	$server_cn           = 'server',
-	$country             = "US",
-	$province            = "AB",
-	$city                = "Springfield",
-	$org                 = "Snake Oil",
-	$email               = "snakeoil@example.com",
-	$local_address,
-	$bind_address        = $::ipaddress,
-	$intranet,
-	$intranet_netmask,
-	$intranet_gateway,
-	$routes              = [],
+    $bind_address       = $::ipaddress,
+    $port               = '1194',
+    $routes             = [],
+    $client_isolation   = true,
+    $crl_source         = false,
+    $hmac_secret_source = false,
+    $hmac_algorithm     = 'none',
+    $cipher             = 'ECDHE-RSA-AES256-GCM-SHA384',
+    $address,
+    $ca_cert_source,
+    $cert_source,
+    $key_source,
+    $dh_params_source,
 ) {
-	$easy_rsa = $::openvpn::easy_rsa_path
-	$vpn_dir = "/etc/openvpn/${name}"
-	$ssl_dir = "${vpn_dir}/ssl"
-	$ccd_dir = "${vpn_dir}/clients"
-	$vars = "${vpn_dir}/easy-rsa.vars"
-	$opensslcnf = "${vpn_dir}/openssl.cnf"
-	
-	file {
-		$vpn_dir:
-			ensure => directory,
-			owner  => 'root',
-			group  => 'root',
-			mode   => 0755,
-			notify => Service['openvpn'];
+    $vpn_dir = "/etc/openvpn/${name}"
+    $ssl_dir = "${vpn_dir}/ssl"
+    $ccd_dir = "${name}/clients"
 
-		$ssl_dir:
-			ensure => directory,
-			owner  => 'root',
-			group  => 'root',
-			mode   => 0755;
+    File {
+        ensure => present,
+        owner  => 'root',
+        group  => 'root',
+        notify => Service['openvpn'],
+    }
+    
+    file { $vpn_dir:
+        ensure => directory,
+        mode   => 0755,
+    }
 
-		$ccd_dir:
-			ensure  => directory,
-			owner   => 'root',
-			group   => 'root',
-			mode    => 0755,
-			purge   => true,
-			recurse => true;
+    file { $ssl_dir:
+        ensure => directory,
+        mode   => 0755,
+    }
 
-		$vars:
-			ensure  => present,
-			owner   => 'root',
-			group   => 'root',
-			mode    => 0644,
-			content => template('openvpn/easy-rsa.vars.erb');
+    file { "${ssl_dir}/ca.crt":
+        mode   => '0644',
+        source => $ca_cert_source,
+    }
 
-		$opensslcnf:
-			ensure  => present,
-			owner   => 'root',
-			group   => 'root',
-			mode    => 0644,
-			content => template('openvpn/openssl.cnf.erb');
-	}
+    file { "${ssl_dir}/server.crt":
+        mode   => '0644',
+        source => $cert_source,
+    }
 
-	Exec {
-		path     => [ '/bin', '/usr/bin', '/sbin', '/usr/sbin', $easy_rsa ],
-		user     => 'root',
-		provider => 'shell',
-	}
+    file { "${ssl_dir}/server.key":
+        mode   => '0400',
+        source => $key_source,
+    }
 
-	exec {
-		"openvpn-${name}-init-dh-params":
-			command => ". ${vars} && clean-all && build-dh",
-			creates => "${ssl_dir}/dh1024.pem",
-			require => [ File[$vars], File[$opensslcnf] ],
-			before  => Exec["openvpn-${name}-init-ca"];
+    file { "${ssl_dir}/dh_params.pem":
+        mode   => '0400',
+        source => $dh_params_source,
+    }
 
-		"openvpn-${name}-init-ca":
-			command => ". ${vars} && pkitool --initca",
-			creates => "${ssl_dir}/ca.key",
-			require => [ File[$vars], File[$opensslcnf] ],
-			before  => Exec["openvpn-${name}-server-cert"];
+    if $hmac_secret_source {
+        file { "${ssl_dir}/tls-auth.key":
+            mode   => '0400',
+            source => $hmac_secret_source,
+        }
+    }
 
-		"openvpn-${name}-server-cert":
-			command => ". ${vars} && pkitool --server ${server_cn}",
-			creates => "${ssl_dir}/${server_cn}.key",
-			before  => Concat["/etc/openvpn/${name}.conf"];
-	}
+    if $crl_source {
+        file { "${ssl_dir}/crl.pem":
+            mode   => '0444',
+            source => $crl_source,
+        }
+    }
 
-	concat { "/etc/openvpn/${name}.conf":
-		owner  => 'root',
-		group  => 'root',
-		mode   => 0644,
-	}
+    file { "/etc/openvpn/${ccd_dir}":
+        ensure  => directory,
+        mode    => '0755',
+    }
 
-	concat::fragment { "openvpn-${name}-preamble":
-		target  => "/etc/openvpn/${name}.conf",
-		order   => '00',
-		content => "# This file is managed by puppet\n",
-	}
+    concat { "/etc/openvpn/${name}.conf":
+        owner  => 'root',
+        group  => 'root',
+        mode   => '0644',
+        notify => Service['openvpn'],
+    }
 
-	concat::fragment { "openvpn-${name}-server":
-		target  => "/etc/openvpn/${name}.conf",
-		order   => '20',
-		content => template('openvpn/server.conf.erb'),
-	}
+    concat::fragment { "openvpn-${name}-preamble":
+        target  => "/etc/openvpn/${name}.conf",
+        order   => '00',
+        content => "# This file is managed by puppet\n",
+    }
+
+    concat::fragment { "openvpn-${name}-server":
+        target  => "/etc/openvpn/${name}.conf",
+        order   => '20',
+        content => template('openvpn/server.conf.erb'),
+    }
 }

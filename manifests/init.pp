@@ -3,7 +3,6 @@
 class openvpn (
     $openvpn_package,
     $openvpn_service,
-    $easy_rsa_path,
 ) {
     package { 'openvpn':
         ensure => present,
