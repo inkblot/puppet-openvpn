@@ -67,11 +67,11 @@ port <%= @port %>
 # Crypto Parameters (must match the peer, can't push them)
 
 # HMAC algorithm (anti-tampering checksum)
-auth RSA-MD5
+auth <%= @hmac_algorithm %>
 
 # Cryptographic cipher on main data channel
 # cipher AES-128-CBC (too bad, not on Harlech yet)
-cipher CAST5-CBC
+cipher <%= @cipher %>
 
 # Compress the data.
 comp-lzo

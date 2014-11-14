@@ -6,7 +6,7 @@ define openvpn::server (
     $routes             = [],
     $client_isolation   = true,
     $crl_source         = false,
-    $hmac_secret_source = false,
+    $tls_key_source     = false,
     $hmac_algorithm     = 'none',
     $cipher             = 'ECDHE-RSA-AES256-GCM-SHA384',
     $address,

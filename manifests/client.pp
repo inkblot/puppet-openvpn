@@ -4,6 +4,8 @@ define openvpn::client (
     $port           = '5000',
     $address        = false,
     $tls_key_source = false,
+    $hmac_algorithm = 'none',
+    $cipher         = 'ECDHE-RSA-AES256-GCM-SHA384',
     $server,
     $server_dn,
     $ca_cert_source,
