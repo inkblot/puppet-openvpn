@@ -1,11 +1,12 @@
 # ex: syntax=puppet ts=4 sw=4 si et
 
 define openvpn::client (
-    $port           = '5000',
-    $address        = false,
-    $tls_key_source = false,
-    $hmac_algorithm = 'none',
-    $cipher         = 'ECDHE-RSA-AES256-GCM-SHA384',
+    $port            = '5000',
+    $address         = false,
+    $hmac_algorithm  = 'SHA1',
+    $cipher          = 'AES-256-CBC-HMAC-SHA1',
+    $tls_cipher      = 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS'
+    $tls_auth_source = false,
     $server,
     $server_dn,
     $ca_cert_source,
@@ -48,10 +49,10 @@ define openvpn::client (
         source => $key_source,
     }
 
-    if $tls_key_source {
+    if $tls_auth_source {
         file { "${ssl_dir}/tls-auth.key":
             mode   => '0400',
-            source => $tls_key_source,
+            source => $tls_auth_source,
         }
     }
 

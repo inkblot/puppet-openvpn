@@ -68,6 +68,11 @@ port <%= @port %>
 
 # HMAC algorithm (anti-tampering checksum)
 auth <%= @hmac_algorithm %>
+<%- if @tls_auth_source -%>
+
+# HMAC hardening
+tls-auth <%= @ssl_dir %>/tls-auth.key
+<%- end -%>
 
 # Cryptographic cipher on main data channel
 # cipher AES-128-CBC (too bad, not on Harlech yet)
@@ -84,6 +89,9 @@ comp-lzo
 
 # Polarity of this host (tls-client or tls-server)
 tls-client
+
+# Allowable TLS ciphers
+tls-cipher <%= @tls_cipher %>
 
 # Certificate Authority file (symbolic links to the real locations)
 ca <%= @ssl_dir %>/ca.crt

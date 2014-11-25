@@ -6,9 +6,10 @@ define openvpn::server (
     $routes             = [],
     $client_isolation   = true,
     $crl_source         = false,
-    $tls_key_source     = false,
-    $hmac_algorithm     = 'none',
-    $cipher             = 'ECDHE-RSA-AES256-GCM-SHA384',
+    $tls_auth_source    = false,
+    $hmac_algorithm     = 'SHA1',
+    $cipher             = 'AES-256-CBC-HMAC-SHA1',
+    $tls_cipher         = 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS',
     $address,
     $ca_cert_source,
     $cert_source,
@@ -56,10 +57,10 @@ define openvpn::server (
         source => $dh_params_source,
     }
 
-    if $hmac_secret_source {
+    if $tls_auth_source {
         file { "${ssl_dir}/tls-auth.key":
             mode   => '0400',
-            source => $hmac_secret_source,
+            source => $tls_auth_source,
         }
     }
 
