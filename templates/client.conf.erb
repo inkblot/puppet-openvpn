@@ -23,7 +23,7 @@ nobind
 mlock
 
 # Use a dynamic tun device.  (Could also be tap, for ether bridging.)
-dev tap0
+dev <%= @device %>
 # tun-ipv6 (can't use with mode server on the other end)
 
 # MTU for tunnel (outer) packets.  Over-conservative default 1300, recommended
@@ -89,9 +89,11 @@ comp-lzo
 
 # Polarity of this host (tls-client or tls-server)
 tls-client
+<%- if @tls_cipher -%>
 
 # Allowable TLS ciphers
 tls-cipher <%= @tls_cipher %>
+<%- end -%>
 
 # Certificate Authority file (symbolic links to the real locations)
 ca <%= @ssl_dir %>/ca.crt
@@ -103,6 +105,8 @@ cert <%= @ssl_dir %>/client.crt
 key <%= @ssl_dir %>/client.key
 persist-key
 #askpass
+<%- if @server_dn -%>
 
 # How to validate the server certificate
 verify-x509-name '<%= @server_dn %>'
+<%- end -%>

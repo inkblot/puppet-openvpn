@@ -4,6 +4,8 @@ class openvpn (
     $openvpn_package,
     $openvpn_service,
 ) {
+    include defaults
+
     package { 'openvpn':
         ensure => present,
         name   => $openvpn_package,

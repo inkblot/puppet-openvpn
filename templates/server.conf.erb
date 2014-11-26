@@ -35,6 +35,11 @@ ping-timer-rem
 # Address of the local tap0 interface
 <%- (ip, prefixlen) = @address.split /\// -%>
 ifconfig <%= "#{ip} #{IPAddr.new('255.255.255.255').mask(prefixlen).to_s}" %>
+<%- if @ifconfig_pool -%>
+
+# Client address pool
+ifconfig-pool <%= @ifconfig_pool['start_address'] %> <%= @ifconfig_pool['stop_address'] %> <%= @ifconfig_pool['netmask'] %>
+<%- end -%>
 
 # Don't complain about not knowing IP addresses.
 ifconfig-nowarn
@@ -116,9 +121,11 @@ comp-lzo
 
 # Polarity of this host (tls-client or tls-server)
 tls-server
+<%- if @tls_cipher -%>
 
 # Allowable TLS ciphers
 tls-cipher <%= @tls_cipher %>
+<%- end -%>
 
 # Certificate Authority file (symbolic links to the real locations)
 ca <%= @ssl_dir %>/ca.crt
