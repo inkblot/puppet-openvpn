@@ -67,19 +67,21 @@ mode server
 # Let them talk to each other
 client-to-client
 <%- end -%>
-
 <%- if not @routes.empty? -%>
-# Routes
-<%-   @routes.each do |route| -%>
-<%-     if route['local'] -%>
-route <%= route['network'] %> <%= route['netmask'] %> <%= route['gateway'] %><%= route['local_metric'] ? " #{route['local_metric']}" : '' %>
-<%-     end -%>
-<%-     if route['push'] -%>
-push route <%= route['network'] %> <%= route['netmask'] %> <%= route['gateway'] %><%= route['push_metric'] ? " #{route['push_metric']}" : '' %>
-<%-     end
-      end -%>
 
-<%- end -%>
+# Routes
+<%-   @routes.each do |route|
+        (network, prefixlen) = route['network'].split(/\//)
+        netmask = prefixlen.nil? ? route['netmask'] : IPAddr.new('255.255.255.255').mask(prefixlen.to_i).to_s
+        if route['local'] -%>
+route <%= network %> <%= netmask %> <%= route['gateway'] %><%= route['local_metric'] ? " #{route['local_metric']}" : '' %>
+<%-     end
+        if route['push'] -%>
+push route <%= network %> <%= netmask %> <%= route['gateway'] %><%= route['push_metric'] ? " #{route['push_metric']}" : '' %>
+<%-     end
+      end
+    end -%>
+
 # Per-client configuration
 client-config-dir <%= @ccd_dir %>
 
