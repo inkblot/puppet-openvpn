@@ -44,25 +44,37 @@ ping 10
 ping-restart 300
 
 # Parameters of Peer
+<%- @connections.each do |connection|
+      protocol = connection['protocol']
+      protocol ||= 'udp'
+      protocol = "#{protocol}-client" if protocol === 'tcp' -%>
+<connection>
 
 # Our OpenVPN peer 
-remote <%= @server %>
+remote <%= connection['remote'] %>
+
+# Port (default is 5000)
+port <%= connection['port'] || '1194' %>
 
 # Protocol (udp, tcp-server, tcp-client).  udp is the default, and usually best.
-proto udp
-<%- if @address
+proto <%= protocol %>
+<%-   if connection.include?('socks-proxy') -%>
+
+# SOCKS proxy
+socks-proxy <%= connection['socks-proxy'] %> <%= connection['socks-port'] || '1080' %> <%= connection['socks-authfile'] || '' %>
+<%-   end -%>
+</connection>
+<%- end
+    if @address
+      (ip, prefixlen) = @address.split /\// -%>
 
 # (Don't) configure local <-> remote IP addresses of tunnel.  Get from server.
-      (ip, prefixlen) = @address.split /\// -%>
 ifconfig <%= "#{ip} #{IPAddr.new('255.255.255.255').mask(prefixlen).to_s}" %>
 <%- else -%>
 
 # Accept configuration overrides from the server.
 pull
 <%- end -%>
-
-# Port (default is 5000)
-port <%= @port %>
 
 # Crypto Parameters (must match the peer, can't push them)
 

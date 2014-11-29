@@ -9,7 +9,7 @@ define openvpn::client (
     $tls_cipher      = $::openvpn::defaults::tls_cipher,
     $tls_auth_source = false,
     $server_dn       = false,
-    $server,
+    $connections,
     $ca_cert_source,
     $cert_source,
     $key_source,
