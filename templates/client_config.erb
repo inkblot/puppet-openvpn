@@ -1,0 +1,11 @@
+<%- require 'ipaddr' -%>
+<%- if @address
+      (addr, prefixlen) = @address.split(/\//)
+      netmask = IPAddr.new('255.255.255.255').mask(prefixlen.to_i).to_s -%>
+ifconfig-push <%= addr %> <%= netmask %>
+<%- end -%>
+<%- @routes.each do |route|
+      (network, prefixlen) = route['network'].split(/\//)
+      netmask = prefixlen.nil? ? route['netmask'] : IPAddr.new('255.255.255.255').mask(prefixlen.to_i).to_s -%>
+push route <%= network %> <%= netmask %> <%= route['gateway'] %><%= route['metric'] ? " #{route['metric']}" : '' %>
+<%- end -%>
