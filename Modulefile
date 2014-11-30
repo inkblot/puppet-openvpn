@@ -1,5 +1,5 @@
 name    'inkblot/openvpn'
-version '0.3.0'
+version '0.4.0'
 source  'git://github.com/inkblot/puppet-openvpn.git'
 author  'inkblot'
 license 'Apache 2.0'
