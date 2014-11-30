@@ -2,8 +2,10 @@
 
 define openvpn::client_config (
     $vpn,
-    $address = false,
-    $routes  = [],
+    $address      = false,
+    $routes       = [],
+    $ping         = false,
+    $ping_restart = false,
 ) {
     file { "/etc/openvpn/${vpn}/clients/${name}":
         ensure  => present,
@@ -11,5 +13,6 @@ define openvpn::client_config (
         group   => 'root',
         mode    => '0644',
         content => template('openvpn/client_config.erb'),
+        notify  => Service['openvpn'],
     }
 }

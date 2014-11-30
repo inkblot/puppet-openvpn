@@ -11,6 +11,8 @@ define openvpn::server (
     $cipher           = $::openvpn::defaults::cipher,
     $tls_cipher       = $::openvpn::defaults::tls_cipher,
     $ifconfig_pool    = false,
+    $ping             = false,
+    $ping_restart     = false,
     $address,
     $ca_cert_source,
     $cert_source,

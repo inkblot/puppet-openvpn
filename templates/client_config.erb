@@ -4,8 +4,14 @@
       netmask = IPAddr.new('255.255.255.255').mask(prefixlen.to_i).to_s -%>
 ifconfig-push <%= addr %> <%= netmask %>
 <%- end -%>
+<%- if @ping -%>
+push "ping <%= @ping %>"
+<%- end -%>
+<%- if @ping_restart -%>
+push "ping-restart <%= @ping_restart %>"
+<%- end -%>
 <%- @routes.each do |route|
       (network, prefixlen) = route['network'].split(/\//)
       netmask = prefixlen.nil? ? route['netmask'] : IPAddr.new('255.255.255.255').mask(prefixlen.to_i).to_s -%>
-push route <%= network %> <%= netmask %> <%= route['gateway'] %><%= route['metric'] ? " #{route['metric']}" : '' %>
+push "route <%= network %> <%= netmask %> <%= route['gateway'] %><%= route['metric'] ? " #{route['metric']}" : '' %>"
 <%- end -%>

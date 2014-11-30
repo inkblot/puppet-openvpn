@@ -38,10 +38,15 @@ mtu-disc maybe
 # Empirically verify the MTU.  Results logged after about 3 minutes.
 # Requires equivalent support on the other end.
 mtu-test
+<%- if @ping -%>
 
 # Send pings to keep conntracks alive and detect a dead peer, only if connected.
-ping 10
-ping-restart 300
+ping <%= @ping %>
+<%-   if @ping_restart -%>
+ping-restart <%= @ping_restart %>
+<%-   end -%>
+ping-timer-rem
+<%- end -%>
 
 # Parameters of Peer
 <%- @connections.each do |connection|

@@ -26,11 +26,15 @@ mtu-disc maybe
 # Empirically verify the MTU.  Results logged after about 3 minutes.
 # Requires equivalent support on the other end.
 mtu-test
+<%- if @ping -%>
 
 # Send pings to keep conntracks alive and detect a dead peer, only if connected.
-ping 10
-ping-restart 300
+ping <%= @ping %>
+<%-   if @ping_restart -%>
+ping-restart <%= @ping_restart %>
+<%-   end -%>
 ping-timer-rem
+<%- end -%>
 
 # Address of the local tap0 interface
 <%- (ip, prefixlen) = @address.split /\// -%>
@@ -77,7 +81,7 @@ client-to-client
 route <%= network %> <%= netmask %> <%= route['gateway'] %><%= route['local_metric'] ? " #{route['local_metric']}" : '' %>
 <%-     end
         if route['push'] -%>
-push route <%= network %> <%= netmask %> <%= route['gateway'] %><%= route['push_metric'] ? " #{route['push_metric']}" : '' %>
+push "route <%= network %> <%= netmask %> <%= route['gateway'] %><%= route['push_metric'] ? " #{route['push_metric']}" : '' %>"
 <%-     end
       end
     end -%>
