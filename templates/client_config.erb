@@ -15,3 +15,8 @@ push "ping-restart <%= @ping_restart %>"
       netmask = prefixlen.nil? ? route['netmask'] : IPAddr.new('255.255.255.255').mask(prefixlen.to_i).to_s -%>
 push "route <%= network %> <%= netmask %> <%= route['gateway'] %><%= route['metric'] ? " #{route['metric']}" : '' %>"
 <%- end -%>
+<%- @iroutes.each do |iroute|
+      (network, prefixlen) = iroute.split(/\//)
+      netmask = IPAddr.new('255.255.255.255').mask((prefixlen || 32).to_i).to_s -%>
+iroute <%= network %><%= prefixlen.nil? ? '' : " #{netmask}" %>
+<%- end -%>

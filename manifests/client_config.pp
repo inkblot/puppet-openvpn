@@ -4,6 +4,7 @@ define openvpn::client_config (
     $vpn,
     $address      = false,
     $routes       = [],
+    $iroutes      = [],
     $ping         = false,
     $ping_restart = false,
 ) {
