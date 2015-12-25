@@ -4,4 +4,5 @@ class openvpn::defaults (
     $tls_cipher,
     $cipher,
     $use_verify_x509_name,
+    $x509_name_type,
 ) {}
