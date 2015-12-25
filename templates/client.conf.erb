@@ -126,7 +126,7 @@ persist-key
 
 # How to validate the server certificate
 <%-   if @use_verify_x509_name -%>
-verify-x509-name '<%= @server_dn %>'
+verify-x509-name '<%= @server_dn %>' <%= @x509_name_type %>
 <%-   else -%>
 tls-remote '<%= @server_dn %>'
 <%-   end

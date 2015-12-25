@@ -4,3 +4,4 @@ openvpn::openvpn_service: 'openvpn'
 openvpn::defaults::cipher: 'AES-128-CBC'
 openvpn::defaults::tls_cipher: 'TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA:TLS-DHE-RSA-WITH-3DES-EDE-CBC-SHA:TLS-DHE-RSA-WITH-AES-128-CBC-SHA:TLS-DHE-RSA-WITH-SEED-CBC-SHA:TLS-DHE-RSA-WITH-CAMELLIA-128-CBC-SHA'
 openvpn::defaults::use_verify_x509_name: true
+openvpn::defaults::x509_name_type: 'name'
