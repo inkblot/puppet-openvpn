@@ -13,6 +13,7 @@ define openvpn::client (
     $x509_name_type       = $::openvpn::defaults::x509_name_type,
     $ping                 = false,
     $ping_restart         = false,
+    $mtu_discovery        = true,
     $connections,
     $ca_cert_source,
     $cert_source,

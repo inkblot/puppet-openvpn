@@ -25,6 +25,7 @@ mlock
 # Use a dynamic tun device.  (Could also be tap, for ether bridging.)
 dev <%= @device %>
 # tun-ipv6 (can't use with mode server on the other end)
+<%- if @mtu_discovery -%>
 
 # MTU for tunnel (outer) packets.  Over-conservative default 1300, recommended
 # is (link_mtu - 28) deducting the UDP header, i.e. 1472 for a standard link 
@@ -38,6 +39,7 @@ mtu-disc maybe
 # Empirically verify the MTU.  Results logged after about 3 minutes.
 # Requires equivalent support on the other end.
 mtu-test
+<%- end -%>
 <%- if @ping -%>
 
 # Send pings to keep conntracks alive and detect a dead peer, only if connected.

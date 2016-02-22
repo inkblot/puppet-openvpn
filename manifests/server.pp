@@ -2,6 +2,7 @@
 
 define openvpn::server (
     $bind_address     = $::ipaddress,
+    $protocol         = 'udp',
     $port             = '1194',
     $routes           = [],
     $client_isolation = true,

@@ -46,7 +46,7 @@ ifconfig-pool <%= @ifconfig_pool['start_address'] %> <%= @ifconfig_pool['stop_ad
 ifconfig-nowarn
 
 # Protocol (udp, tcp-server, tcp-client).  udp is the default, and usually best.
-proto udp
+proto <%= @protocol %>
 
 # Port (default is 5000)
 # port 5000
