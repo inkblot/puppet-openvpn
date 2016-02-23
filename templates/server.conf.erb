@@ -12,7 +12,7 @@ script-security 2
 mlock
 
 # Use a dynamic tun device.  (Could also be tap, for ether bridging.)
-dev tap0
+dev <%= @device %>
 <%- if @mtu_discovery -%>
 
 # MTU for tunnel (outer) packets.  Over-conservative default 1300, recommended
@@ -87,9 +87,11 @@ push "route <%= network %> <%= netmask %> <%= route['gateway'] %><%= route['push
 
 # Per-client configuration
 client-config-dir <%= @ccd_dir %>
+<%- if @protocol == 'udp' -%>
 
 # Connection freq, N connects per S seconds.  Resist denial of service attacks.
 connect-freq 1 1
+<%- end -%>
 
 # Allow reconnects with a different IP address (DHCP renew does that sometimes)
 float
