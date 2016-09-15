@@ -23,6 +23,8 @@ define openvpn::server (
     $mtu_discovery    = true,
     $up_script        = undef,
     $down_script      = undef,
+    $user             = undef,
+    $group            = undef,
 ) {
     $vpn_dir = "/etc/openvpn/${name}"
     $ssl_dir = "${vpn_dir}/ssl"

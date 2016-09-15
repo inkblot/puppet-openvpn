@@ -154,3 +154,9 @@ key <%= @ssl_dir %>/server.key
 # Certificate Revocation List
 crl-verify <%= @ssl_dir %>/crl.pem
 <%- end -%>
+<%- if @user -%>
+user <%= @user %>
+<%- if @group -%>
+group <%= @group %>
+<%- end -%>
+<%- end -%>
