@@ -78,8 +78,8 @@ define openvpn::server (
     }
 
     file { "/etc/openvpn/${ccd_dir}":
-        ensure  => directory,
-        mode    => '0755',
+        ensure => directory,
+        mode   => '0755',
     }
 
     concat { "/etc/openvpn/${name}.conf":
