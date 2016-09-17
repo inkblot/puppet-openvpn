@@ -9,7 +9,7 @@ class openvpn (
     package { 'openvpn':
         ensure => present,
         name   => $openvpn_package,
-	}
+    }
 
     service { 'openvpn':
         ensure  => running,
