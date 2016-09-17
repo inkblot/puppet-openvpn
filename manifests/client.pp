@@ -32,12 +32,12 @@ define openvpn::client (
 
     file { $vpn_dir:
         ensure => directory,
-        mode   => 0755,
+        mode   => '0755',
     }
 
     file { $ssl_dir:
         ensure => directory,
-        mode   => 0755,
+        mode   => '0755',
     }
 
     file { "${ssl_dir}/ca.crt":
