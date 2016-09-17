@@ -1,6 +1,10 @@
 # ex: syntax=puppet ts=4 sw=4 si et
 
 define openvpn::client (
+    $connections,
+    $ca_cert_source,
+    $cert_source,
+    $key_source,
     $device               = 'tap0',
     $port                 = '5000',
     $address              = false,
@@ -14,10 +18,6 @@ define openvpn::client (
     $ping                 = false,
     $ping_restart         = false,
     $mtu_discovery        = true,
-    $connections,
-    $ca_cert_source,
-    $cert_source,
-    $key_source,
 ) {
     $easy_rsa = $::openvpn::easy_rsa_path
     $vpn_dir = "/etc/openvpn/${name}"
