@@ -4,12 +4,13 @@ class openvpn (
     $openvpn_package,
     $openvpn_service,
 ) {
-    include defaults
+
+    include ::openvpn::defaults
 
     package { 'openvpn':
         ensure => present,
         name   => $openvpn_package,
-	}
+    }
 
     service { 'openvpn':
         ensure  => running,

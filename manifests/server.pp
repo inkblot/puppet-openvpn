@@ -55,12 +55,12 @@ define openvpn::server (
     
     file { $vpn_dir:
         ensure => directory,
-        mode   => 0755,
+        mode   => '0755',
     }
 
     file { $ssl_dir:
         ensure => directory,
-        mode   => 0755,
+        mode   => '0755',
     }
 
     file { "${ssl_dir}/ca.crt":
@@ -102,8 +102,8 @@ define openvpn::server (
     }
 
     file { "/etc/openvpn/${ccd_dir}":
-        ensure  => directory,
-        mode    => '0755',
+        ensure => directory,
+        mode   => '0755',
     }
 
     concat { "/etc/openvpn/${name}.conf":
