@@ -1,6 +1,11 @@
 # ex: syntax=puppet ts=4 sw=4 si et
 
 define openvpn::server (
+    $address,
+    $ca_cert_source,
+    $cert_source,
+    $key_source,
+    $dh_params_source,
     $bind_address     = $::ipaddress,
     $protocol         = 'udp',
     $port             = '1194',
@@ -16,11 +21,6 @@ define openvpn::server (
     $ping             = false,
     $ping_restart     = false,
     $mtu_discovery    = true,
-    $address,
-    $ca_cert_source,
-    $cert_source,
-    $key_source,
-    $dh_params_source,
 ) {
     $vpn_dir = "/etc/openvpn/${name}"
     $ssl_dir = "${vpn_dir}/ssl"
@@ -35,12 +35,12 @@ define openvpn::server (
     
     file { $vpn_dir:
         ensure => directory,
-        mode   => 0755,
+        mode   => '0755',
     }
 
     file { $ssl_dir:
         ensure => directory,
-        mode   => 0755,
+        mode   => '0755',
     }
 
     file { "${ssl_dir}/ca.crt":
@@ -78,8 +78,8 @@ define openvpn::server (
     }
 
     file { "/etc/openvpn/${ccd_dir}":
-        ensure  => directory,
-        mode    => '0755',
+        ensure => directory,
+        mode   => '0755',
     }
 
     concat { "/etc/openvpn/${name}.conf":
