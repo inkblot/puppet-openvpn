@@ -14,13 +14,13 @@ define openvpn::client (
     $ping                 = false,
     $ping_restart         = false,
     $mtu_discovery        = true,
+    $ca_cert_source       = '',
+    $ca_cert_content      = '',
+    $cert_source          = '',
+    $cert_content         = '',
+    $key_source           = '',
+    $key_content          = '',
     $connections,
-    $ca_cert_source,
-    $ca_cert_content,
-    $cert_source,
-    $cert_content,
-    $key_source,
-    $key_content,
 ) {
     $easy_rsa = $::openvpn::easy_rsa_path
     $vpn_dir = "/etc/openvpn/${name}"
