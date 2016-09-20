@@ -8,6 +8,13 @@ verb 1
 mute 10
 script-security 2
 
+<%- if @up_script -%>
+up <%= @up_script %>
+<%- end -%>
+<%- if @down_script -%>
+down <%= @down_script %>
+<%- end -%>
+
 # Lock key and buffers in memory, keeping them out of the swap file.
 mlock
 
