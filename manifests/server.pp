@@ -1,11 +1,6 @@
 # ex: syntax=puppet ts=4 sw=4 si et
 
 define openvpn::server (
-    $address,
-    $ca_cert_source,
-    $cert_source,
-    $key_source,
-    $dh_params_source,
     $bind_address          = $::ipaddress,
     $protocol              = 'udp',
     $port                  = '1194',
@@ -26,11 +21,36 @@ define openvpn::server (
     $down_script           = undef,
     $user                  = undef,
     $group                 = undef,
+    $ca_cert_source        = '',
+    $ca_cert_content       = '',
+    $cert_source           = '',
+    $cert_content          = '',
+    $key_source            = '',
+    $key_content           = '',
+    $dh_params_source      = '',
+    $dh_params_content     = '',
+    $address,
 ) {
     $vpn_dir = "/etc/openvpn/${name}"
     $ssl_dir = "${vpn_dir}/ssl"
     $ccd_dir = "${name}/clients"
     $ifconfig_pool_persist_file = "${vpn_dir}/ifconfig_pool"
+
+    if (empty($ca_cert_source) and empty($ca_cert_content)) {
+        fail('Must specify either ca_cert_source or ca_cert_content property of openvpn::server')
+    }
+
+    if (empty($cert_source) and empty($cert_content)) {
+        fail('Must specify either cert_source or cert_content property of openvpn::server')
+    }
+
+    if (empty($key_source) and empty($key_content)) {
+        fail('Must specify either key_source or key_content property of openvpn::server')
+    }
+
+    if (empty($dh_params_source) and empty($dh_params_content)) {
+        fail('Must specify either dh_params_source or dh_params_content property of openvpn::server')
+    }
 
     File {
         ensure => present,
@@ -50,23 +70,27 @@ define openvpn::server (
     }
 
     file { "${ssl_dir}/ca.crt":
-        mode   => '0644',
-        source => $ca_cert_source,
+        mode    => '0644',
+        source  => $ca_cert_source,
+        content => $ca_cert_content,
     }
 
     file { "${ssl_dir}/server.crt":
-        mode   => '0644',
-        source => $cert_source,
+        mode    => '0644',
+        source  => $cert_source,
+        content => $cert_content,
     }
 
     file { "${ssl_dir}/server.key":
-        mode   => '0400',
-        source => $key_source,
+        mode    => '0400',
+        source  => $key_source,
+        content => $key_content,
     }
 
     file { "${ssl_dir}/dh_params.pem":
-        mode   => '0400',
-        source => $dh_params_source,
+        mode    => '0400',
+        source  => $dh_params_source,
+        content => $dh_params_content,
     }
 
     if $tls_auth_source {
