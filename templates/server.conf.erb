@@ -155,8 +155,10 @@ key <%= @ssl_dir %>/server.key
 crl-verify <%= @ssl_dir %>/crl.pem
 <%- end -%>
 <%- if @user -%>
+
+# Drop privileges
 user <%= @user %>
-<%- if @group -%>
+<%-   if @group -%>
 group <%= @group %>
-<%- end -%>
+<%-   end -%>
 <%- end -%>
