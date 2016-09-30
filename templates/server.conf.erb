@@ -49,6 +49,9 @@ ifconfig <%= "#{ip} #{IPAddr.new('255.255.255.255').mask(prefixlen).to_s}" %>
 
 # Client address pool
 ifconfig-pool <%= @ifconfig_pool['start_address'] %> <%= @ifconfig_pool['stop_address'] %> <%= @ifconfig_pool['netmask'] %>
+<%- if @ifconfig_pool_persist -%>
+ifconfig-pool-persist <%= @ifconfig_pool_persist_file %>
+<%- end -%>
 <%- end -%>
 
 # Don't complain about not knowing IP addresses.
