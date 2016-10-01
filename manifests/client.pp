@@ -14,12 +14,12 @@ define openvpn::client (
     $ping                 = false,
     $ping_restart         = false,
     $mtu_discovery        = true,
-    $ca_cert_source       = '',
-    $ca_cert_content      = '',
-    $cert_source          = '',
-    $cert_content         = '',
-    $key_source           = '',
-    $key_content          = '',
+    $ca_cert_source       = undef,
+    $ca_cert_content      = undef,
+    $cert_source          = undef,
+    $cert_content         = undef,
+    $key_source           = undef,
+    $key_content          = undef,
     $connections,
 ) {
     $easy_rsa = $::openvpn::easy_rsa_path
