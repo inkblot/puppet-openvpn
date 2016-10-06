@@ -1,0 +1,15 @@
+---
+version: 4
+datadir: data
+hierarchy:
+  - name: "OS Release"
+    backend: yaml
+    path: "osfamily/%{facts.os.distro.codename}"
+  - name: "Operating System"
+    backend: yaml
+    path: "osfamily/%{facts.os.name}"
+  - name: "OS family"
+    backend: yaml
+    path: "osfamily/%{facts.os.family}"
+  - name: "common"
+    backend: yaml
