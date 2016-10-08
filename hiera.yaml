@@ -4,10 +4,10 @@ datadir: data
 hierarchy:
   - name: "OS Release"
     backend: yaml
-    path: "osfamily/%{facts.os.distro.codename}"
+    path: "osfamily/%{facts.os.family}/%{facts.os.name}/%{facts.os.distro.codename}"
   - name: "Operating System"
     backend: yaml
-    path: "osfamily/%{facts.os.name}"
+    path: "osfamily/%{facts.os.family}/%{facts.os.name}"
   - name: "OS family"
     backend: yaml
     path: "osfamily/%{facts.os.family}"
