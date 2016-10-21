@@ -83,7 +83,7 @@ define openvpn::client (
     concat { "/etc/openvpn/${name}.conf":
         owner  => 'root',
         group  => 'root',
-        mode   => 0644,
+        mode   => '0644',
         notify => Service['openvpn'],
     }
 
