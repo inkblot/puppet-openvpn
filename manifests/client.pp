@@ -22,7 +22,6 @@ define openvpn::client (
     $key_content          = undef,
     $connections,
 ) {
-    $easy_rsa = $::openvpn::easy_rsa_path
     $vpn_dir = "/etc/openvpn/${name}"
     $ssl_dir = "${vpn_dir}/ssl"
 
