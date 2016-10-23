@@ -22,7 +22,6 @@ define openvpn::client (
     $key_content          = undef,
     $connections,
 ) {
-    $easy_rsa = $::openvpn::easy_rsa_path
     $vpn_dir = "/etc/openvpn/${name}"
     $ssl_dir = "${vpn_dir}/ssl"
 
@@ -83,7 +82,7 @@ define openvpn::client (
     concat { "/etc/openvpn/${name}.conf":
         owner  => 'root',
         group  => 'root',
-        mode   => 0644,
+        mode   => '0644',
         notify => Service['openvpn'],
     }
 
