@@ -1,6 +1,7 @@
 # ex: syntax=puppet ts=4 sw=4 si et
 
 define openvpn::client (
+    $connections,
     $device               = 'tap0',
     $port                 = '5000',
     $address              = false,
@@ -20,7 +21,6 @@ define openvpn::client (
     $cert_content         = undef,
     $key_source           = undef,
     $key_content          = undef,
-    $connections,
 ) {
     $vpn_dir = "/etc/openvpn/${name}"
     $ssl_dir = "${vpn_dir}/ssl"
