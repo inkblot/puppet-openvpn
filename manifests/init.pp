@@ -1,10 +1,9 @@
-# ex:ts=4 sw=4 tw=72 et
+# ex: syntax=puppet ts=4 sw=4 si et
 
 class openvpn (
     $openvpn_package,
     $openvpn_service,
 ) {
-
     include ::openvpn::defaults
 
     package { 'openvpn':
@@ -15,6 +14,6 @@ class openvpn (
     service { 'openvpn':
         ensure  => running,
         name    => $openvpn_service,
-        require => Package['openvpn'],
+        require => Package['openvpn']
     }
 }

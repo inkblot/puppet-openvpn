@@ -22,7 +22,10 @@ define openvpn::client (
     $key_source           = undef,
     $key_content          = undef,
 ) {
-    $vpn_dir = "/etc/openvpn/${name}"
+    include ::openvpn
+
+    $config_dir = $::openvpn::defaults::config_dir
+    $vpn_dir = "${config_dir}/${name}"
     $ssl_dir = "${vpn_dir}/ssl"
 
     if (empty($ca_cert_source) and empty($ca_cert_content)) {
@@ -79,7 +82,7 @@ define openvpn::client (
         }
     }
 
-    concat { "/etc/openvpn/${name}.conf":
+    concat { "${config_dir}/${name}.conf":
         owner  => 'root',
         group  => 'root',
         mode   => '0644',
@@ -87,13 +90,13 @@ define openvpn::client (
     }
 
     concat::fragment { "openvpn-${name}-preamble":
-        target  => "/etc/openvpn/${name}.conf",
+        target  => "${config_dir}/${name}.conf",
         order   => '00',
         content => "# This file is managed by puppet\n",
     }
 
     concat::fragment { "openvpn-${name}-client":
-        target  => "/etc/openvpn/${name}.conf",
+        target  => "${config_dir}/${name}.conf",
         order   => '20',
         content => template('openvpn/client.conf.erb'),
     }

@@ -9,13 +9,17 @@ define openvpn::client_config (
     $ping         = false,
     $ping_restart = false,
 ) {
+    include ::openvpn
+
+    $config_dir = $::openvpn::defaults::config_dir
+
     if $client_name {
         $real_name = $client_name
     } else {
         $real_name = $name
     }
 
-    file { "/etc/openvpn/${vpn}/clients/${real_name}":
+    file { "${config_dir}/${vpn}/clients/${real_name}":
         ensure  => present,
         owner   => 'root',
         group   => 'root',

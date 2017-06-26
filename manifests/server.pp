@@ -28,10 +28,12 @@ define openvpn::server (
     $cert_content          = undef,
     $key_source            = undef,
     $key_content           = undef,
-    $dh_params_source      = undef,
-    $dh_params_content     = undef,
 ) {
-    $vpn_dir = "/etc/openvpn/${name}"
+    include ::openvpn
+    include ::openvpn::dh_params
+
+    $config_dir = $::openvpn::defaults::config_dir
+    $vpn_dir = "${config_dir}/${name}"
     $ssl_dir = "${vpn_dir}/ssl"
     $ccd_dir = "${name}/clients"
     $ifconfig_pool_persist_file = "${vpn_dir}/ifconfig_pool"
@@ -46,10 +48,6 @@ define openvpn::server (
 
     if (empty($key_source) and empty($key_content)) {
         fail('Must specify either key_source or key_content property of openvpn::server')
-    }
-
-    if (empty($dh_params_source) and empty($dh_params_content)) {
-        fail('Must specify either dh_params_source or dh_params_content property of openvpn::server')
     }
 
     File {
@@ -87,12 +85,6 @@ define openvpn::server (
         content => $key_content,
     }
 
-    file { "${ssl_dir}/dh_params.pem":
-        mode    => '0400',
-        source  => $dh_params_source,
-        content => $dh_params_content,
-    }
-
     if $tls_auth_source {
         file { "${ssl_dir}/tls-auth.key":
             mode   => '0400',
@@ -107,12 +99,12 @@ define openvpn::server (
         }
     }
 
-    file { "/etc/openvpn/${ccd_dir}":
+    file { "${config_dir}/${ccd_dir}":
         ensure => directory,
         mode   => '0755',
     }
 
-    concat { "/etc/openvpn/${name}.conf":
+    concat { "${config_dir}/${name}.conf":
         owner  => 'root',
         group  => 'root',
         mode   => '0644',
@@ -120,13 +112,13 @@ define openvpn::server (
     }
 
     concat::fragment { "openvpn-${name}-preamble":
-        target  => "/etc/openvpn/${name}.conf",
+        target  => "${config_dir}/${name}.conf",
         order   => '00',
         content => "# This file is managed by puppet\n",
     }
 
     concat::fragment { "openvpn-${name}-server":
-        target  => "/etc/openvpn/${name}.conf",
+        target  => "${config_dir}/${name}.conf",
         order   => '20',
         content => template('openvpn/server.conf.erb'),
     }

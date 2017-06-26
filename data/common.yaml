@@ -1,6 +1,10 @@
 # ex: si ts=2 sw=2 et
 openvpn::openvpn_package: 'openvpn'
 openvpn::openvpn_service: 'openvpn'
+
+openvpn::dh_params::size: 4096
+
+openvpn::defaults::config_dir: '/etc/openvpn'
 openvpn::defaults::cipher: 'AES-128-CBC'
 openvpn::defaults::tls_cipher: 'TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA:TLS-DHE-RSA-WITH-3DES-EDE-CBC-SHA:TLS-DHE-RSA-WITH-AES-128-CBC-SHA:TLS-DHE-RSA-WITH-SEED-CBC-SHA:TLS-DHE-RSA-WITH-CAMELLIA-128-CBC-SHA'
 openvpn::defaults::use_verify_x509_name: true
