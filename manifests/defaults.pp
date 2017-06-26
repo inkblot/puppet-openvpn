@@ -2,6 +2,7 @@
 
 class openvpn::defaults (
     $config_dir,
+    $openvpn_package,
     $tls_cipher,
     $cipher,
     $use_verify_x509_name,

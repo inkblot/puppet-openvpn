@@ -1,10 +1,10 @@
 # ex: syntax=puppet ts=4 sw=4 si et
 
 class openvpn (
-    $openvpn_package,
     $openvpn_service,
 ) {
     include ::openvpn::defaults
+    $openvpn_package = $::openvpn::defaults::openvpn_package
 
     package { 'openvpn':
         ensure => present,
