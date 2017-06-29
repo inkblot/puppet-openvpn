@@ -1,0 +1,16 @@
+{{with secret "<%= @vault_pki_path %>/issue/<%= @vault_pki_role %>" "common_name=<%= @vault_pki_common_name %>"}}
+# Certificate Authority file (symbolic links to the real locations)
+<ca>
+{{.Data.issuing_ca}}
+</ca>
+
+# Our certificate/public key
+<cert>
+{{.Data.certificate}}
+</cert>
+
+# Our private key
+<key>
+{{.Data.private_key}}
+</key>
+{{end}}

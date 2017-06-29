@@ -1,3 +1,0 @@
----
-openvpn::defaults::tls_cipher: 'DHE-RSA-AES256-SHA:DHE-RSA-CAMELLIA256-SHA:DHE-RSA-AES128-SHA:DHE-RSA-CAMELLIA128-SHA'
-openvpn::defaults::use_verify_x509_name: false

@@ -2,27 +2,30 @@
 
 define openvpn::client (
     $connections,
-    $device               = 'tap0',
-    $port                 = '5000',
-    $address              = false,
-    $hmac_algorithm       = 'SHA1',
-    $cipher               = $::openvpn::defaults::cipher,
-    $tls_cipher           = $::openvpn::defaults::tls_cipher,
-    $tls_auth_source      = false,
-    $use_verify_x509_name = $::openvpn::defaults::use_verify_x509_name,
-    $server_dn            = false,
-    $x509_name_type       = $::openvpn::defaults::x509_name_type,
-    $ping                 = false,
-    $ping_restart         = false,
-    $mtu_discovery        = true,
-    $ca_cert_source       = undef,
-    $ca_cert_content      = undef,
-    $cert_source          = undef,
-    $cert_content         = undef,
-    $key_source           = undef,
-    $key_content          = undef,
+    $device          = 'tap0',
+    $port            = '5000',
+    $address         = false,
+    $hmac_algorithm  = 'SHA1',
+    $cipher          = false,
+    $tls_cipher      = false,
+    $tls_auth_source = false,
+    $server_dn       = false,
+    $x509_name_type  = false,
+    $ping            = false,
+    $ping_restart    = false,
+    $mtu_discovery   = true,
+    $ca_cert_source  = undef,
+    $ca_cert_content = undef,
+    $cert_source     = undef,
+    $cert_content    = undef,
+    $key_source      = undef,
+    $key_content     = undef,
 ) {
     include ::openvpn
+
+    $_cipher = $cipher ? { true => $cipher, false => $::openvpn::cipher }
+    $_tls_cipher = $tls_cipher ? { true => $tls_cipher, false => $::openvpn::tls_cipher }
+    $_x509_name_type = $x509_name_type ? { true => $x509_name_type, false => $::openvpn::x509_name_type }
 
     $config_dir = $::openvpn::defaults::config_dir
     $vpn_dir = "${config_dir}/${name}"

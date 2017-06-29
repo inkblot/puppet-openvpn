@@ -106,7 +106,7 @@ connect-freq 1 1
 # Allow reconnects with a different IP address (DHCP renew does that sometimes)
 float
 
-# Diffie-Hellman parameters (1024 bits) (only needed on server)
+# Diffie-Hellman parameters
 dh <%= @config_dir %>/dh_params.pem
 
 # This command allows one user to have more than one connection at a time,
@@ -125,11 +125,7 @@ tls-auth <%= @ssl_dir %>/tls-auth.key
 
 # Cryptographic cipher on main data channel
 # cipher AES-128-CBC
-cipher <%= @cipher %>
-
-# TLS encryption algo(s), colon separated.  `openvpn --show-tls` for a list. 30
-# ciphers in default list starting with DHE-RSA-AES256-SHA (most preferred)
-# down to EXP-RC4-MD5 (40 bits).  Use default.
+cipher <%= @_cipher %>
 
 # Use LZO compression (with adaptive shutoff)
 comp-lzo
@@ -138,24 +134,10 @@ comp-lzo
 
 # Polarity of this host (tls-client or tls-server)
 tls-server
-<%- if @tls_cipher -%>
+<%- if @_tls_cipher -%>
 
 # Allowable TLS ciphers
-tls-cipher <%= @tls_cipher %>
-<%- end -%>
-
-# Certificate Authority file (symbolic links to the real locations)
-ca <%= @ssl_dir %>/ca.crt
-
-# Our certificate/public key
-cert <%= @ssl_dir %>/server.crt
-
-# Our private key
-key <%= @ssl_dir %>/server.key
-<%- if @crl_source -%>
-
-# Certificate Revocation List
-crl-verify <%= @ssl_dir %>/crl.pem
+tls-cipher <%= @_tls_cipher %>
 <%- end -%>
 <%- if @user -%>
 

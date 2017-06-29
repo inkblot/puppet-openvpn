@@ -95,7 +95,7 @@ tls-auth <%= @ssl_dir %>/tls-auth.key
 
 # Cryptographic cipher on main data channel
 # cipher AES-128-CBC (too bad, not on Harlech yet)
-cipher <%= @cipher %>
+cipher <%= @_cipher %>
 
 # Compress the data.
 comp-lzo
@@ -108,10 +108,10 @@ comp-lzo
 
 # Polarity of this host (tls-client or tls-server)
 tls-client
-<%- if @tls_cipher -%>
+<%- if @_tls_cipher -%>
 
 # Allowable TLS ciphers
-tls-cipher <%= @tls_cipher %>
+tls-cipher <%= @_tls_cipher %>
 <%- end -%>
 
 # Certificate Authority file (symbolic links to the real locations)
@@ -127,9 +127,5 @@ persist-key
 <%- if @server_dn -%>
 
 # How to validate the server certificate
-<%-   if @use_verify_x509_name -%>
-verify-x509-name '<%= @server_dn %>' <%= @x509_name_type %>
-<%-   else -%>
-tls-remote '<%= @server_dn %>'
-<%-   end
-    end -%>
+verify-x509-name '<%= @server_dn %>' <%= @_x509_name_type %>
+<%- end -%>
