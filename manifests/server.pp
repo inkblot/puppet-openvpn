@@ -28,6 +28,9 @@ define openvpn::server (
     $cert_content          = undef,
     $key_source            = undef,
     $key_content           = undef,
+    $vault_pki_path        = 'openvpn',
+    $vault_pki_role        = 'openvpn-server',
+    $vault_pki_common_name = $::facts['networking']['fqdn'],
 ) {
     include ::openvpn
     include ::openvpn::dh_params
@@ -43,16 +46,34 @@ define openvpn::server (
     $ifconfig_pool_persist_file = "${vpn_dir}/ifconfig_pool"
     $config_file = "${config_dir}/${name}.conf"
 
-    if (empty($ca_cert_source) and empty($ca_cert_content)) {
-        fail('Must specify either ca_cert_source or ca_cert_content property of openvpn::server')
-    }
+    if ($cert_source == "vault") {
+        if (empty($vault_pki_path)) {
+            fail('Must specify vault_pki_path with cert_source => vault')
+        }
 
-    if (empty($cert_source) and empty($cert_content)) {
-        fail('Must specify either cert_source or cert_content property of openvpn::server')
-    }
+        if (empty($vault_pki_role)) {
+            fail('Must specify vault_pki_role with cert_source => vault')
+        }
 
-    if (empty($key_source) and empty($key_content)) {
-        fail('Must specify either key_source or key_content property of openvpn::server')
+        if (empty($vault_pki_common_name)) {
+            fail('Must specify vault_pki_common_name with cert_source => vault')
+        }
+
+        $_config_file = "${config_dir}/${name}.ctmpl"
+    } else {
+        if (empty($ca_cert_source) and empty($ca_cert_content)) {
+            fail('Must specify either ca_cert_source or ca_cert_content property of openvpn::server')
+        }
+
+        if (empty($cert_source) and empty($cert_content)) {
+            fail('Must specify either cert_source or cert_content property of openvpn::server')
+        }
+
+        if (empty($key_source) and empty($key_content)) {
+            fail('Must specify either key_source or key_content property of openvpn::server')
+        }
+
+        $_config_file = $config_file
     }
 
     File {
@@ -72,7 +93,7 @@ define openvpn::server (
         mode   => '0755',
     }
 
-    concat { $config_file:
+    concat { $_config_file:
         owner  => 'root',
         group  => 'root',
         mode   => '0644',
@@ -81,40 +102,53 @@ define openvpn::server (
     }
 
     concat::fragment { "openvpn-${name}-server":
-        target  => $config_file,
+        target  => $_config_file,
         order   => '20',
         content => template('openvpn/server.conf.erb'),
     }
 
-    file { "${ssl_dir}/ca.crt":
-        mode    => '0644',
-        source  => $ca_cert_source,
-        content => $ca_cert_content,
-    }
-
-    file { "${ssl_dir}/server.crt":
-        mode    => '0644',
-        source  => $cert_source,
-        content => $cert_content,
-    }
-
-    file { "${ssl_dir}/server.key":
-        mode    => '0400',
-        source  => $key_source,
-        content => $key_content,
-    }
-
-    if $crl_source {
-        file { "${ssl_dir}/crl.pem":
-            mode   => '0444',
-            source => $crl_source,
+    if ($cert_source == 'vault') {
+        hashicorp::consul_template::template { $config_file:
+            source => $_config_file,
+            mode   => '0600',
         }
-    }
 
-    concat::fragment { "openvpn-${name}-ssl":
-        target  => $config_file,
-        order   => '30',
-        content => template('openvpn/server-ssl.conf.erb'),
+        concat::fragment { "openvpn-${name}-ssl":
+            target  => $_config_file,
+            order   => '30',
+            content => template('openvpn/server-vault.conf.erb'),
+        }
+    } else {
+        file { "${ssl_dir}/ca.crt":
+            mode    => '0644',
+            source  => $ca_cert_source,
+            content => $ca_cert_content,
+        }
+
+        file { "${ssl_dir}/server.crt":
+            mode    => '0644',
+            source  => $cert_source,
+            content => $cert_content,
+        }
+
+        file { "${ssl_dir}/server.key":
+            mode    => '0400',
+            source  => $key_source,
+            content => $key_content,
+        }
+
+        if $crl_source {
+            file { "${ssl_dir}/crl.pem":
+                mode   => '0444',
+                source => $crl_source,
+            }
+        }
+
+        concat::fragment { "openvpn-${name}-ssl":
+            target  => $_config_file,
+            order   => '30',
+            content => template('openvpn/server-ssl.conf.erb'),
+        }
     }
 
     if $tls_auth_source {
