@@ -3,4 +3,6 @@
 class openvpn::defaults (
     $config_dir,
     $openvpn_package,
+    $scoped_service_prefix,
+    $scoped_service_suffix,
 ) {}

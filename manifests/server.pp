@@ -45,6 +45,8 @@ define openvpn::server (
     $ccd_dir = "${name}/clients"
     $ifconfig_pool_persist_file = "${vpn_dir}/ifconfig_pool"
     $config_file = "${config_dir}/${name}.conf"
+    $service_ensure = $::openvpn::service_ensure
+    $service_enable = $::openvpn::service_enable
 
     if ($cert_source == "vault") {
         if (empty($vault_pki_path)) {
@@ -94,11 +96,12 @@ define openvpn::server (
     }
 
     concat { $_config_file:
-        owner  => 'root',
-        group  => 'root',
-        mode   => '0644',
-        warn   => "# This file is managed by puppet\n",
-        notify => Service['openvpn'],
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0644',
+        warn    => "# This file is managed by puppet\n",
+        require => Package['openvpn'],
+        notify  => Service['openvpn'],
     }
 
     concat::fragment { "openvpn-${name}-server":
@@ -161,5 +164,29 @@ define openvpn::server (
     file { "${config_dir}/${ccd_dir}":
         ensure => directory,
         mode   => '0755',
+    }
+
+    $scoped_service_prefix = $::openvpn::defaults::scoped_service_prefix
+    $scoped_service_suffix = $::openvpn::defaults::scoped_service_suffix
+
+    notify { "scoped_service_prefix = ${scoped_service_prefix}": }
+    notify { "scoped_service_suffix = ${scoped_service_suffix}": }
+
+    if ($scoped_service_prefix or $scoped_service_suffix) {
+        $service_stem = $scoped_service_prefix ? {
+            false   => $name,
+            default => "${scoped_service_prefix}${name}"
+        }
+        $scoped_service = $scoped_service_suffix ? {
+            false   => $service_stem,
+            default => "${service_stem}${scoped_service_suffix}"
+        }
+
+        notify { "scoped_service = ${scoped_service}": }
+
+        service { $scoped_service:
+            ensure => $service_ensure,
+            enable => $service_enable,
+        }
     }
 }
