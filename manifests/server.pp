@@ -169,9 +169,6 @@ define openvpn::server (
     $scoped_service_prefix = $::openvpn::defaults::scoped_service_prefix
     $scoped_service_suffix = $::openvpn::defaults::scoped_service_suffix
 
-    notify { "scoped_service_prefix = ${scoped_service_prefix}": }
-    notify { "scoped_service_suffix = ${scoped_service_suffix}": }
-
     if ($scoped_service_prefix or $scoped_service_suffix) {
         $service_stem = $scoped_service_prefix ? {
             false   => $name,
@@ -181,8 +178,6 @@ define openvpn::server (
             false   => $service_stem,
             default => "${service_stem}${scoped_service_suffix}"
         }
-
-        notify { "scoped_service = ${scoped_service}": }
 
         service { $scoped_service:
             ensure => $service_ensure,
