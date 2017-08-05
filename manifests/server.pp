@@ -112,8 +112,9 @@ define openvpn::server (
 
     if ($cert_source == 'vault') {
         hashicorp::consul_template::template { $config_file:
-            source => $_config_file,
-            mode   => '0600',
+            source  => $_config_file,
+            mode    => '0600',
+            command => inline_template($::openvpn::defaults::template_command),
         }
 
         concat::fragment { "openvpn-${name}-ssl":

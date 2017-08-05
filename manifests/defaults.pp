@@ -5,4 +5,5 @@ class openvpn::defaults (
     $openvpn_package,
     $scoped_service_prefix,
     $scoped_service_suffix,
+    $template_command,
 ) {}

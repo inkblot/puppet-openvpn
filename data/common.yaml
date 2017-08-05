@@ -13,3 +13,4 @@ openvpn::defaults::config_dir: '/etc/openvpn'
 openvpn::defaults::openvpn_package: 'openvpn'
 openvpn::defaults::scoped_service_prefix: 'openvpn@'
 openvpn::defaults::scoped_service_suffix: false
+openvpn::defaults::template_command: 'systemctl restart openvpn@<%= @name %>.service'
