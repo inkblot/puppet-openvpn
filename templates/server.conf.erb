@@ -102,16 +102,20 @@ client-config-dir <%= @ccd_dir %>
 # Connection freq, N connects per S seconds.  Resist denial of service attacks.
 connect-freq 1 1
 <%- end -%>
+<%- if @float -%>
 
 # Allow reconnects with a different IP address (DHCP renew does that sometimes)
 float
+<%- end -%>
 
 # Diffie-Hellman parameters
 dh <%= @config_dir %>/dh_params.pem
+<%- if @duplicate_cn -%>
 
 # This command allows one user to have more than one connection at a time,
 # e.g. from multiple machines on his home net.  
 duplicate-cn
+<%- end -%>
 
 # Crypto Parameters (must match the peer, can't push them)
 

@@ -9,6 +9,8 @@ define openvpn::server (
     $routes                = [],
     $client_isolation      = true,
     $crl_source            = false,
+    $duplicate_cn          = true,
+    $float                 = true,
     $tls_auth_source       = false,
     $hmac_algorithm        = 'SHA1',
     $cipher                = false,
