@@ -114,14 +114,6 @@ tls-client
 tls-cipher <%= @_tls_cipher %>
 <%- end -%>
 
-# Certificate Authority file (symbolic links to the real locations)
-ca <%= @ssl_dir %>/ca.crt
-
-# Our certificate/public key
-cert <%= @ssl_dir %>/client.crt
-
-# Our private key
-key <%= @ssl_dir %>/client.key
 persist-key
 #askpass
 <%- if @server_dn -%>
