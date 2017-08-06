@@ -122,7 +122,7 @@ define openvpn::server (
         concat::fragment { "openvpn-${name}-ssl":
             target  => $_config_file,
             order   => '30',
-            content => template('openvpn/server-vault.conf.erb'),
+            content => template('openvpn/vault-certificates.conf.erb'),
         }
     } else {
         file { "${ssl_dir}/ca.crt":
