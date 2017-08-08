@@ -11,7 +11,8 @@ define openvpn::server (
     $crl_source            = false,
     $duplicate_cn          = true,
     $float                 = true,
-    $tls_auth_source       = false,
+    $tls_auth_source       = undef,
+    $tls_auth_content      = undef,
     $hmac_algorithm        = 'SHA1',
     $cipher                = false,
     $tls_cipher            = false,
@@ -157,10 +158,11 @@ define openvpn::server (
         }
     }
 
-    if $tls_auth_source {
+    if ($tls_auth_source or $tls_auth_content) {
         file { "${ssl_dir}/tls-auth.key":
-            mode   => '0400',
-            source => $tls_auth_source,
+            mode    => '0400',
+            source  => $tls_auth_source,
+            content => $tls_auth_content,
         }
     }
 

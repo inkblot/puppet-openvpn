@@ -8,7 +8,8 @@ define openvpn::client (
     $hmac_algorithm        = 'SHA1',
     $cipher                = false,
     $tls_cipher            = false,
-    $tls_auth_source       = false,
+    $tls_auth_source       = undef,
+    $tls_auth_content      = undef,
     $server_dn             = false,
     $x509_name_type        = false,
     $ping                  = false,
@@ -135,10 +136,11 @@ define openvpn::client (
         }
     }
 
-    if $tls_auth_source {
+    if !(empty($tls_auth_source) and empty($tls_auth_content)) {
         file { "${ssl_dir}/tls-auth.key":
-            mode   => '0400',
-            source => $tls_auth_source,
+            mode    => '0400',
+            source  => $tls_auth_source,
+            content => $tls_auth_content,
         }
     }
 
