@@ -1,3 +1,6 @@
+<%-
+require 'ipaddr'
+-%>
 # Originally /usr/share/doc/packages/openvpn/sample-config-files/tls-home.conf
 
 # General Parameters
@@ -7,12 +10,12 @@
 verb 1
 mute 10
 script-security 2
+<%- if @user -%>
 
-<%- if @up_script -%>
-up <%= @up_script %>
-<%- end -%>
-<%- if @down_script -%>
-down <%= @down_script %>
+user <%= @user %>
+<%-   if @group -%>
+group <%= @group %>
+<%-   end -%>
 <%- end -%>
 
 # Lock key and buffers in memory, keeping them out of the swap file.
@@ -42,10 +45,55 @@ keepalive <%= @ping %> <%= @ping_restart %>
 ping-timer-rem
 <%- end -%>
 
+# Crypto Parameters (must match the peer, can't push them)
+
+# HMAC algorithm (anti-tampering checksum)
+auth <%= @hmac_algorithm %>
+<%- if @tls_auth_source or @tls_auth_content -%>
+
+# HMAC hardening
+tls-auth <%= @ssl_dir %>/tls-auth.key
+<%- end -%>
+
+# Cryptographic cipher on main data channel
+cipher <%= @_cipher %>
+
+comp-lzo
+
+# TLS Parameters
+<%- if @_tls_cipher -%>
+
+# Allowable TLS ciphers
+tls-cipher <%= @_tls_cipher %>
+<%- end -%>
+<%- if @remote_cert_tls -%>
+
+remote-cert-tls client
+<%- end -%>
+
+<%- if @persist_key -%>
+persist-key
+<%- end -%>
+<%- if @persist_tun -%>
+persist-tun
+<%- end -%>
+<%- if @persist_local_ip -%>
+persist-local-ip
+<%- end -%>
+<%- if @persist_remote_ip -%>
+persist-remote-ip
+<%- end -%>
+
+# Polarity of this host (tls-client or tls-server)
+tls-server
+
 # Address of the local tap0 interface
 <%- (ip, prefixlen) = @address.split /\// -%>
 ifconfig <%= "#{ip} #{IPAddr.new('255.255.255.255').mask(prefixlen).to_s}" %>
 <%- if @ifconfig_pool -%>
+local <%= @bind_address %>
+port <%= @port %>
+proto <%= @protocol %>
 
 # Client address pool
 ifconfig-pool <%= @ifconfig_pool['start_address'] %> <%= @ifconfig_pool['stop_address'] %> <%= @ifconfig_pool['netmask'] %>
@@ -56,22 +104,6 @@ ifconfig-pool-persist <%= @ifconfig_pool_persist_file %>
 
 # Don't complain about not knowing IP addresses.
 ifconfig-nowarn
-
-# Protocol (udp, tcp-server, tcp-client).  udp is the default, and usually best.
-proto <%= @protocol %>
-
-# Port (default is 5000)
-# port 5000
-port <%= @port %>
-
-# Preserve root-only files and options.
-persist-key
-persist-local-ip
-persist-remote-ip
-persist-tun
-
-# Address to bind to
-local <%= @bind_address %>
 
 # Multi-client server
 mode server
@@ -117,37 +149,9 @@ dh <%= @config_dir %>/dh_params.pem
 duplicate-cn
 <%- end -%>
 
-# Crypto Parameters (must match the peer, can't push them)
-
-# HMAC algorithm (anti-tampering checksum)
-auth <%= @hmac_algorithm %>
-<%- if @tls_auth_source or @tls_auth_content -%>
-
-# HMAC hardening
-tls-auth <%= @ssl_dir %>/tls-auth.key
+<%- if @up_script -%>
+up <%= @up_script %>
 <%- end -%>
-
-# Cryptographic cipher on main data channel
-# cipher AES-128-CBC
-cipher <%= @_cipher %>
-
-# Use LZO compression (with adaptive shutoff)
-comp-lzo
-
-# TLS Parameters
-
-# Polarity of this host (tls-client or tls-server)
-tls-server
-<%- if @_tls_cipher -%>
-
-# Allowable TLS ciphers
-tls-cipher <%= @_tls_cipher %>
-<%- end -%>
-<%- if @user -%>
-
-# Drop privileges
-user <%= @user %>
-<%-   if @group -%>
-group <%= @group %>
-<%-   end -%>
+<%- if @down_script -%>
+down <%= @down_script %>
 <%- end -%>

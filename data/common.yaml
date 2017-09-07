@@ -13,4 +13,4 @@ openvpn::defaults::config_dir: '/etc/openvpn'
 openvpn::defaults::openvpn_package: 'openvpn'
 openvpn::defaults::scoped_service_prefix: 'openvpn@'
 openvpn::defaults::scoped_service_suffix: false
-openvpn::defaults::template_command: 'systemctl restart openvpn@<%= @name %>.service'
+openvpn::defaults::template_command: 'bash -c \"systemctl is-active openvpn@<%= @name %>.service > /dev/null && systemctl show -p MainPID openvpn@<%= @name %>.service | cut -f2 -d= | xargs -rn1 kill -s USR1 || systemctl start openvpn@<%= @name %>.service\"'

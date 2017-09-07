@@ -12,8 +12,13 @@ define openvpn::client (
     $tls_auth_content      = undef,
     $server_dn             = false,
     $x509_name_type        = false,
+    $remote_cert_tls       = false,
     $ping                  = false,
     $ping_restart          = false,
+    $persist_key           = true,
+    $persist_tun           = false,
+    $persist_local_ip      = false,
+    $persist_remote_ip     = false,
     $mtu_discovery         = true,
     $ca_cert_source        = undef,
     $ca_cert_content       = undef,
@@ -24,6 +29,8 @@ define openvpn::client (
     $vault_pki_path        = 'openvpn',
     $vault_pki_role        = 'openvpn-server',
     $vault_pki_common_name = $::facts['networking']['fqdn'],
+    $vault_min_wait        = undef,
+    $vault_max_wait        = undef,
 ) {
     include ::openvpn
 
@@ -100,9 +107,11 @@ define openvpn::client (
 
     if ($cert_source == 'vault') {
         hashicorp::consul_template::template { $config_file:
-            source  => $_config_file,
-            mode    => '0600',
-            command => inline_template($::openvpn::defaults::template_command),
+            source   => $_config_file,
+            mode     => '0600',
+            command  => inline_template($::openvpn::defaults::template_command),
+            min_wait => $vault_min_wait,
+            max_wait => $vault_max_wait,
         }
 
         concat::fragment { "openvpn-${name}-ssl":

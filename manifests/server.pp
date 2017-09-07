@@ -18,8 +18,13 @@ define openvpn::server (
     $tls_cipher            = false,
     $ifconfig_pool         = false,
     $ifconfig_pool_persist = false,
+    $remote_cert_tls       = false,
     $ping                  = false,
     $ping_restart          = false,
+    $persist_key           = true,
+    $persist_tun           = true,
+    $persist_local_ip      = true,
+    $persist_remote_ip     = true,
     $mtu_discovery         = true,
     $up_script             = undef,
     $down_script           = undef,
@@ -34,6 +39,8 @@ define openvpn::server (
     $vault_pki_path        = 'openvpn',
     $vault_pki_role        = 'openvpn-server',
     $vault_pki_common_name = $::facts['networking']['fqdn'],
+    $vault_min_wait        = undef,
+    $vault_max_wait        = undef,
 ) {
     include ::openvpn
     include ::openvpn::dh_params
@@ -115,9 +122,11 @@ define openvpn::server (
 
     if ($cert_source == 'vault') {
         hashicorp::consul_template::template { $config_file:
-            source  => $_config_file,
-            mode    => '0600',
-            command => inline_template($::openvpn::defaults::template_command),
+            source   => $_config_file,
+            mode     => '0600',
+            command  => inline_template($::openvpn::defaults::template_command),
+            min_wait => $vault_min_wait,
+            max_wait => $vault_max_wait,
         }
 
         concat::fragment { "openvpn-${name}-ssl":
