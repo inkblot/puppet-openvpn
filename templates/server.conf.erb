@@ -49,10 +49,10 @@ ping-timer-rem
 
 # HMAC algorithm (anti-tampering checksum)
 auth <%= @hmac_algorithm %>
-<%- if @tls_auth_source or @tls_auth_content -%>
+<%- if @_tls_auth_source -%>
 
 # HMAC hardening
-tls-auth <%= @ssl_dir %>/tls-auth.key
+tls-auth <%= @_tls_auth_source %>
 <%- end -%>
 
 # Cryptographic cipher on main data channel

@@ -8,7 +8,8 @@ define openvpn::server (
     $device                = 'tap0',
     $routes                = [],
     $client_isolation      = true,
-    $crl_source            = false,
+    $crl_source            = undef,
+    $crl_content           = undef,
     $duplicate_cn          = true,
     $float                 = true,
     $tls_auth_source       = undef,
@@ -114,6 +115,18 @@ define openvpn::server (
         notify  => Service['openvpn'],
     }
 
+    if !empty($tls_auth_content) {
+        $_tls_auth_source = "${ssl_dir}/tls-auth.key"
+        file { $_tls_auth_source:
+            mode    => '0400',
+            content => $tls_auth_content,
+        }
+    } elsif !empty($tls_auth_source) {
+        $_tls_auth_source = $tls_auth_source
+    } else {
+        $_tls_auth_source = false
+    }
+
     concat::fragment { "openvpn-${name}-server":
         target  => $_config_file,
         order   => '20',
@@ -135,43 +148,52 @@ define openvpn::server (
             content => template('openvpn/vault-certificates.conf.erb'),
         }
     } else {
-        file { "${ssl_dir}/ca.crt":
-            mode    => '0644',
-            source  => $ca_cert_source,
-            content => $ca_cert_content,
-        }
-
-        file { "${ssl_dir}/server.crt":
-            mode    => '0644',
-            source  => $cert_source,
-            content => $cert_content,
-        }
-
-        file { "${ssl_dir}/server.key":
-            mode    => '0400',
-            source  => $key_source,
-            content => $key_content,
-        }
-
-        if $crl_source {
-            file { "${ssl_dir}/crl.pem":
-                mode   => '0444',
-                source => $crl_source,
+        if !empty($ca_cert_content) {
+            $_ca_cert_source = "${ssl_dir}/ca.crt"
+            file { $_ca_cert_source:
+                mode    => '0644',
+                content => $ca_cert_content,
             }
+        } else {
+            $_ca_cert_source = $ca_cert_source
+        }
+
+        if !empty($cert_content) {
+            $_cert_source = "${ssl_dir}/server.crt"
+            file { $_cert_source:
+                mode    => '0644',
+                content => $cert_content,
+            }
+        } else {
+            $_cert_source = $cert_source
+        }
+
+        if !empty($key_content) {
+            $_key_source = "${ssl_dir}/server.key"
+            file { $_key_source:
+                mode    => '0400',
+                content => $key_content,
+            }
+        } else {
+            $_key_source = $key_source
+        }
+
+        if !empty($crl_content) {
+            $_crl_source = "${ssl_dir}/crl.pem"
+            file { $_crl_content:
+                mode    => '0444',
+                content => $crl_content,
+            }
+        } elsif !empty($crl_source) {
+            $_crl_source = $crl_source
+        } else {
+            $_crl_source = false
         }
 
         concat::fragment { "openvpn-${name}-ssl":
             target  => $_config_file,
             order   => '30',
             content => template('openvpn/server-ssl.conf.erb'),
-        }
-    }
-
-    if ($tls_auth_source or $tls_auth_content) {
-        file { "${ssl_dir}/tls-auth.key":
-            mode    => '0400',
-            source  => $tls_auth_source,
-            content => $tls_auth_content,
         }
     }
 
@@ -193,9 +215,10 @@ define openvpn::server (
             default => "${service_stem}${scoped_service_suffix}"
         }
 
+        Concat[$_config_file] ~>
         service { $scoped_service:
-            ensure => $service_ensure,
-            enable => $service_enable,
+            ensure    => $service_ensure,
+            enable    => $service_enable,
         }
     }
 }

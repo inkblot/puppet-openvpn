@@ -42,6 +42,8 @@ define openvpn::client (
     $vpn_dir = "${config_dir}/${name}"
     $ssl_dir = "${vpn_dir}/ssl"
     $config_file = "${config_dir}/${name}.conf"
+    $service_ensure = $::openvpn::service_ensure
+    $service_enable = $::openvpn::service_enable
 
     if ($cert_source == "vault") {
         if (empty($vault_pki_path)) {
@@ -99,6 +101,18 @@ define openvpn::client (
         notify  => Service['openvpn'],
     }
 
+    if !empty($tls_auth_content) {
+        $_tls_auth_source = "${ssl_dir}/tls-auth.key"
+        file { $_tls_auth_source:
+            mode    => '0400',
+            content => $tls_auth_content,
+        }
+    } elsif !empty($tls_auth_source) {
+        $_tls_auth_source = $tls_auth_source
+    } else {
+        $_tls_auth_source = false
+    }
+
     concat::fragment { "openvpn-${name}-client":
         target  => $_config_file,
         order   => '20',
@@ -120,36 +134,40 @@ define openvpn::client (
             content => template('openvpn/vault-certificates.conf.erb'),
         }
     } else {
-        file { "${ssl_dir}/ca.crt":
-            mode    => '0644',
-            source  => $ca_cert_source,
-            content => $ca_cert_content,
+        if !empty($ca_cert_content) {
+            $_ca_cert_source = "${ssl_dir}/ca.crt"
+            file { $_ca_cert_source:
+                mode    => '0644',
+                content => $ca_cert_content,
+            }
+        } else {
+            $_ca_cert_source = $ca_cert_source
         }
 
-        file { "${ssl_dir}/client.crt":
-            mode    => '0644',
-            source  => $cert_source,
-            content => $cert_content,
+        if !empty($cert_content) {
+            $_cert_source = "${ssl_dir}/client.crt"
+            file { $_cert_source:
+                mode    => '0644',
+                content => $cert_content,
+            }
+        } else {
+            $_cert_source = $cert_source
         }
 
-        file { "${ssl_dir}/client.key":
-            mode    => '0400',
-            source  => $key_source,
-            content => $key_content,
+        if !empty($key_content) {
+            $_key_source = "${ssl_dir}/client.key"
+            file { $_key_source:
+                mode    => '0400',
+                content => $key_content,
+            }
+        } else {
+            $_key_source = $key_source
         }
 
         concat::fragment { "openvpn-${name}-ssl":
             target  => $_config_file,
             order   => '30',
             content => template('openvpn/client-ssl.conf.erb'),
-        }
-    }
-
-    if !(empty($tls_auth_source) and empty($tls_auth_content)) {
-        file { "${ssl_dir}/tls-auth.key":
-            mode    => '0400',
-            source  => $tls_auth_source,
-            content => $tls_auth_content,
         }
     }
 

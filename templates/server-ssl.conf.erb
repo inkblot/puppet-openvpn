@@ -1,14 +1,14 @@
 
 # Certificate Authority file (symbolic links to the real locations)
-ca <%= @ssl_dir %>/ca.crt
+ca <%= @_ca_cert_source %>
 
 # Our certificate/public key
-cert <%= @ssl_dir %>/server.crt
+cert <%= @_cert_source %>
 
 # Our private key
-key <%= @ssl_dir %>/server.key
-<%- if @crl_source -%>
+key <%= @_key_source %>
+<%- if @_crl_source -%>
 
 # Certificate Revocation List
-crl-verify <%= @ssl_dir %>/crl.pem
+crl-verify <%= @_crl_source %>
 <%- end -%>
