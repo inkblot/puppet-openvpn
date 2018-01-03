@@ -1,0 +1,9 @@
+fixtures:
+  forge_modules:
+    concat: 'puppetlabs/concat'
+    stdlib: 'puppetlabs/stdlib'
+  repositories:
+    hashicorp: "git://github.com/inkblot/puppet-hashicorp.git"
+  symlinks:
+    "openvpn": "#{source_dir}"
+
