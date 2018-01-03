@@ -15,7 +15,7 @@ define openvpn::server (
     $tls_auth_source       = undef,
     $tls_auth_content      = undef,
     $hmac_algorithm        = 'SHA1',
-    $cipher                = false,
+    $cipher                = undef,
     $tls_cipher            = false,
     $ifconfig_pool         = false,
     $ifconfig_pool_persist = false,
@@ -46,7 +46,12 @@ define openvpn::server (
     include ::openvpn
     include ::openvpn::dh_params
 
-    $_cipher = $cipher ? { true => $cipher, false => $::openvpn::cipher }
+    if (empty($cipher)) {
+      $_cipher = $::openvpn::cipher
+    } else {
+      $_cipher = $cipher
+    }
+
     $_tls_cipher = $tls_cipher ? { true => $tls_cipher, false => $::openvpn::tls_cipher }
 
     $config_dir = $::openvpn::defaults::config_dir
